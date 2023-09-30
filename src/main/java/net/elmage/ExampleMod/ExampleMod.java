@@ -1,7 +1,11 @@
 package net.elmage.ExampleMod;
 
 import com.mojang.logging.LogUtils;
+import net.elmage.ExampleMod.Item.CreativeModMenu;
+import net.elmage.ExampleMod.Item.ModItems;
 import net.minecraft.client.Minecraft;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +32,13 @@ public class ExampleMod
     private static final Logger LOGGER = LogUtils.getLogger();
     public ExampleMod()
     {
+        IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        ModItems.register(modEventBus);
+        CreativeModMenu.register(modEventBus);
+
+        MinecraftForge.EVENT_BUS.register(this);
+        modEventBus.addListener(this::addCreative);
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -37,6 +48,10 @@ public class ExampleMod
     // Add the example block item to the building blocks tab
     private void addCreative(BuildCreativeModeTabContentsEvent event)
     {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS){
+            event.accept(ModItems.pole);
+            event.accept(ModItems.cereal);
+        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
